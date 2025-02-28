@@ -1,5 +1,6 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Major-project
+AI automates bias detection in AI systems using Fairlearn, ART, and SHAP. It simulates diverse scenarios, identifies unfair outcomes, and ensures compliance with the EU AI Act. Delivers actionable insights via dashboards and reports. Built with Python, Flask, and open-source tools. Prevent harm, ensure fairness, and build trust in AI.
+
 
 ## Getting Started
 
@@ -36,6 +37,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 =======
-# Major-project
-AI automates bias detection in AI systems using Fairlearn, ART, and SHAP. It simulates diverse scenarios, identifies unfair outcomes, and ensures compliance with the EU AI Act. Delivers actionable insights via dashboards and reports. Built with Python, Flask, and open-source tools. Prevent harm, ensure fairness, and build trust in AI.
 
