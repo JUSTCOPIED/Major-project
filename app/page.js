@@ -26,6 +26,7 @@ export default function Home() {
         </h1>
         <p style={{ color: "#64748b", marginBottom: 32, fontSize: 18, textAlign: "center" }}>
           AI automates bias detection in AI systems using Fairlearn, ART, and SHAP. Simulate diverse scenarios, identify unfair outcomes, and ensure compliance with the EU AI Act.
+hope to see a better page that this on 12 july
         </p>
         <div style={{ display: "flex", gap: 16 }}>
           <a href="/login" style={{
