@@ -3,12 +3,13 @@
 import { Protected } from "@/components/protected";
 import { useAuth } from "@/components/auth-provider";
 import { useState, useEffect } from "react";
-import { database } from "@/lib/firebase";
-import { ref, push, onValue } from "firebase/database";
+import { database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
+import { ref, onValue, runTransaction, set, get } from "firebase/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function DashboardPage(){
   return (
@@ -22,54 +23,92 @@ function DashboardInner(){
   const { user } = useAuth();
   const [running,setRunning] = useState(false);
   const [results,setResults] = useState([]); // current run live
-  const [history,setHistory] = useState([]); // saved runs
+  const [history,setHistory] = useState([]); // aggregated test summaries
   const [filter,setFilter] = useState("all");
+  const [error,setError] = useState("");
 
-  // Load prior runs (latest 5)
+  // Listen to user test numbers then fetch summaries
   useEffect(()=>{
     if(!user) return;
-    const runsRef = ref(database, `testRuns/${user.uid}`);
-    const unsub = onValue(runsRef, (snap)=>{
+    const userTestsRef = ref(database, `userTests/${user.uid}`);
+    const unsub = onValue(userTestsRef, async (snap)=>{
       const val = snap.val() || {};
-      const arr = Object.entries(val).map(([id,data])=>({id,...data})).sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
-      setHistory(arr);
+      const testNos = Object.keys(val).map(n=> Number(n)).sort((a,b)=> b-a).slice(0,5);
+      const summaries = [];
+      for(const no of testNos){
+        // eslint-disable-next-line no-await-in-loop
+        const testSnap = await get(ref(database, `tests/${no}`));
+        if(testSnap.exists()) summaries.push({ testNo: no, ...testSnap.val() });
+      }
+      setHistory(summaries);
     });
     return ()=>unsub();
   },[user]);
 
   const runTests = async ()=>{
+    setError("");
+    if (FIREBASE_ENV_ISSUES.length){
+      setError("Missing Firebase env vars: " + FIREBASE_ENV_ISSUES.join(", "));
+      return;
+    }
     setRunning(true);
     setResults([]);
     const testCases = ["Auth flow", "Profile update", "Data fetch", "Accessibility", "Performance"];
     const runData = [];
     for(const name of testCases){
-      // simulate async run
       // eslint-disable-next-line no-await-in-loop
-      await new Promise(r=>setTimeout(r, 400));
+      await new Promise(r=>setTimeout(r, 350));
       const passed = Math.random() > 0.2;
-      const record = { name, passed };
-      runData.push(record);
+      runData.push({ name, passed });
       setResults([...runData]);
     }
-    // Save run
-    await push(ref(database, `testRuns/${user.uid}`), { timestamp: Date.now(), cases: runData });
-    setRunning(false);
+    const passCount = runData.filter(c=>c.passed).length;
+    const failCount = runData.length - passCount;
+    const passRate = Math.round(passCount/runData.length*100);
+    // allocate test number
+    const counterRef = ref(database, 'counters/testNo');
+    let testNo;
+    try {
+      await runTransaction(counterRef, (current)=> current == null ? 1 : current + 1, { applyLocally:false }).then(res=> { testNo = res.snapshot.val(); });
+      const summary = { uid:user.uid, timestamp: Date.now(), environment: 'quick', totalCases: runData.length, passCount, failCount, passRate, threshold: null, concurrency: null, note: 'quick-run' };
+      await set(ref(database, `tests/${testNo}`), summary);
+      await set(ref(database, `userTests/${user.uid}/${testNo}`), true);
+      // stats update
+      const userStatsRef = ref(database, `users/${user.uid}/stats`);
+      await runTransaction(userStatsRef, (current)=>{
+        if(!current) return { tests:1, passRate };
+        const tests = (current.tests||0)+1; const newRate = current.passRate==null? passRate : Math.round(((current.passRate*(tests-1))+passRate)/tests);
+        return { tests, passRate:newRate };
+      });
+    } catch(e){
+      // eslint-disable-next-line no-console
+      console.error("Quick run failed", e);
+      setError(e?.message || 'Failed to save test');
+    } finally {
+      setRunning(false);
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-10">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm opacity-70">Welcome back {user.displayName || user.email}</p>
+      <header className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm opacity-70">Welcome back {user.displayName || user.email}</p>
+        </div>
+        <div className="flex gap-3">
+          <Button as={Link} href="/test" variant="outline" size="sm">Start New Test</Button>
+          <Button onClick={runTests} disabled={running} size="sm">{running?"Running…":"Quick Run"}</Button>
+        </div>
       </header>
-      <div className="grid gap-6 md:grid-cols-3">
+  <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Recent Pass Rate</CardTitle>
-            <CardDescription>Last run snapshot</CardDescription>
+            <CardDescription>Last test summary</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-bold">
-            {history[0]? `${history[0].cases.filter(c=>c.passed).length}/${history[0].cases.length}`: '—'}
+            {history[0]? `${history[0].passCount}/${history[0].totalCases}`: '—'}
           </CardContent>
         </Card>
         <Card>
@@ -87,12 +126,13 @@ function DashboardInner(){
             <CardContent className="text-base font-mono">{history[0]? new Date(history[0].timestamp).toLocaleTimeString(): '—'}</CardContent>
         </Card>
       </div>
+  {!!error && <p className="text-xs text-destructive">{error}</p>}
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 flex flex-col">
+  <Card className="lg:col-span-2 flex flex-col">
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle>Test Suite Runner</CardTitle>
-              <CardDescription>Execute synthetic tests (demo)</CardDescription>
+              <CardTitle>Quick Test (Demo)</CardTitle>
+              <CardDescription>Ad-hoc smoke run; stored as summary only</CardDescription>
             </div>
             <Button disabled={running} onClick={runTests}>{running?"Running…":"Run Suite"}</Button>
           </CardHeader>
@@ -131,40 +171,32 @@ function DashboardInner(){
         </Card>
       </section>
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight">Recent Runs</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Recent Runs</h2>
+          <p className="text-xs opacity-60">Latest 5 tests (summary)</p>
+        </div>
         <div className="overflow-auto border border-border rounded-sm">
           <Table>
             <THead>
               <TR>
                 <TH>Time</TH>
                 <TH>Pass Rate</TH>
-                <TH>Failures</TH>
-                <TH>Details</TH>
+                <TH>Env</TH>
+                <TH>Cases</TH>
+                <TH>Test #</TH>
               </TR>
             </THead>
             <TBody>
-              {history.map(run => {
-                const pass = run.cases.filter(c=>c.passed).length;
-                const failList = run.cases.filter(c=>!c.passed);
-                return (
-                  <TR key={run.id}>
-                    <TD className="whitespace-nowrap text-xs">{new Date(run.timestamp).toLocaleString()}</TD>
-                    <TD><Badge variant={pass===run.cases.length? 'success':'outline'}>{pass}/{run.cases.length}</Badge></TD>
-                    <TD className="text-xs">{failList.length? failList.map(f=>f.name).join(', '): '—'}</TD>
-                    <TD>
-                      <details className="text-xs cursor-pointer">
-                        <summary className="opacity-70">View</summary>
-                        <ul className="mt-1 space-y-1">
-                          {run.cases.filter(c=> filter==='all' || (filter==='pass'?c.passed:!c.passed)).map(c=> (
-                            <li key={c.name} className="flex justify-between gap-4"><span>{c.name}</span><span>{c.passed? '✅':'❌'}</span></li>
-                          ))}
-                        </ul>
-                      </details>
-                    </TD>
-                  </TR>
-                );
-              })}
-              {!history.length && <TR><TD colSpan={4} className="text-sm opacity-60">No runs stored.</TD></TR>}
+              {history.map(run => (
+                <TR key={run.testNo}>
+                  <TD className="whitespace-nowrap text-xs">{new Date(run.timestamp).toLocaleString()}</TD>
+                  <TD><Badge variant={run.passCount===run.totalCases? 'success':'outline'}>{run.passCount}/{run.totalCases}</Badge></TD>
+                  <TD className="text-xs">{run.environment}</TD>
+                  <TD className="text-xs">{run.totalCases}</TD>
+                  <TD className="text-xs font-mono">#{run.testNo}</TD>
+                </TR>
+              ))}
+              {!history.length && <TR><TD colSpan={5} className="text-sm opacity-60">No tests yet.</TD></TR>}
             </TBody>
           </Table>
         </div>

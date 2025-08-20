@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { ref, runTransaction, set, serverTimestamp, update } from "firebase/database";
 
 const AuthContext = createContext({ user: null, loading: true });
 
@@ -11,9 +12,37 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setLoading(false);
+      if(u){
+        try {
+          // Create / update user profile record atomically (basic fields only)
+            const userRef = ref(database, `users/${u.uid}`);
+            if (FIREBASE_ENV_ISSUES.length){
+              // eslint-disable-next-line no-console
+              console.error("Skipping user profile sync; missing env vars", FIREBASE_ENV_ISSUES);
+              return;
+            }
+            await runTransaction(userRef, (current)=>{
+              const now = Date.now();
+              if(!current){
+                return {
+                  uid: u.uid,
+                  email: u.email || null,
+                  displayName: u.displayName || null,
+                  createdAt: now,
+                  lastLogin: now,
+                  stats: { tests: 0, passRate: null }
+                };
+              }
+              return { ...current, displayName: u.displayName || current.displayName || null, email: u.email || current.email || null, lastLogin: now };
+            });
+        } catch(err){
+          // Swallow user record errors silently to avoid blocking auth flow
+          console.warn("User profile sync failed", err);
+        }
+      }
     });
     return () => unsub();
   }, []);

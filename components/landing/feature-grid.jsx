@@ -15,9 +15,12 @@ export function FeatureGrid(){
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((f,i)=> (
           <motion.div key={f.title} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{duration:0.5, delay:i*0.05}} className="group relative p-6 rounded-sm border border-border bg-card text-card-foreground overflow-hidden">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition bg-accent" />
-            <h3 className="font-semibold mb-2 text-lg">{f.title}</h3>
-            <p className="text-sm opacity-70 leading-relaxed">{f.desc}</p>
+            {/* Decorative hover wash behind content (fix: pointer-events-none & z-index layering) */}
+            <div className="pointer-events-none absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors" aria-hidden />
+            <div className="relative z-10">
+              <h3 className="font-semibold mb-2 text-lg">{f.title}</h3>
+              <p className="text-sm opacity-80 leading-relaxed">{f.desc}</p>
+            </div>
           </motion.div>
         ))}
       </div>

@@ -11,8 +11,8 @@ import { useState } from "react";
 const navItems = [
   { href: "/", label: "Landing", public: true },
   { href: "/Home", label: "Dashboard", protected: true },
+  { href: "/test", label: "Start Test", protected: true },
   { href: "/profile", label: "Profile", protected: true },
-  { href: "/settings", label: "Settings", protected: true },
 ];
 
 export function Navbar() {
