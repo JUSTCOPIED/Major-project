@@ -3,7 +3,7 @@
 import { Protected } from "@/components/protected";
 import { useAuth } from "@/components/auth-provider";
 import { database } from "@/lib/firebase";
-import { ref, onValue, get, runTransaction, update } from "firebase/database";
+import { ref, onValue, update } from "firebase/database";
 import { useEffect, useState, useMemo } from "react";
 import { updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -28,17 +28,11 @@ function ProfileInner(){
 
   useEffect(()=>{
     if(!user) return;
-    const userTestsRef = ref(database, `userTests/${user.uid}`);
-    const unsub = onValue(userTestsRef, async snap => {
+    const testsRef = ref(database, `user/${user.uid}/tests`);
+    const unsub = onValue(testsRef, snap => {
       const val = snap.val() || {};
-      const testNos = Object.keys(val).map(n=>Number(n)).sort((a,b)=>b-a).slice(0,20);
-      const summaries = [];
-      for(const no of testNos){
-        // eslint-disable-next-line no-await-in-loop
-        const testSnap = await get(ref(database, `tests/${no}`));
-        if(testSnap.exists()) summaries.push({ testNo:no, ...testSnap.val() });
-      }
-      setTests(summaries);
+      const list = Object.entries(val).map(([k,v])=> ({ testNo:Number(k), ...v })).sort((a,b)=> b.testNo - a.testNo).slice(0,20);
+      setTests(list);
     });
     return ()=>unsub();
   },[user]);
@@ -54,7 +48,7 @@ function ProfileInner(){
       await updateProfile(auth.currentUser, { displayName: safeName });
       // mirror to user profile document
       if(safeName){
-        await update(ref(database, `users/${user.uid}`), { displayName: safeName });
+  await update(ref(database, `user/${user.uid}/details`), { displayName: safeName });
       }
       setMessage("Profile updated.");
     } catch(err){ setMessage(err.message); }
