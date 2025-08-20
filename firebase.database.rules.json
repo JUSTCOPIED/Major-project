@@ -8,27 +8,18 @@
         ".write": "auth != null && ( !data.exists() && newData.isNumber() && newData.val() == 1 || (data.isNumber() && newData.isNumber() && newData.val() == data.val() + 1) )"
       }
     },
-    "users": {
+    "user": {
       "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid",
-        "stats": {
-          ".validate": "newData.hasChildren(['tests','passRate'])"
+        "details": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        },
+        "tests": {
+          "$testNo": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid && !data.exists() && newData.hasChildren(['uid','timestamp','environment','totalCases','passCount','failCount','passRate']) && newData.child('uid').val() === auth.uid"
+          }
         }
-      }
-    },
-    "userTests": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        "$testNo": {
-          ".write": "$uid === auth.uid && newData.isBoolean() && newData.val() === true"
-        }
-      }
-    },
-    "tests": {
-      "$testNo": {
-        ".read": "auth != null && data.child('uid').val() === auth.uid",
-        ".write": "auth != null && !data.exists() && newData.hasChildren(['uid','timestamp','environment','totalCases','passCount','failCount','passRate']) && newData.child('uid').val() === auth.uid"
       }
     }
   }

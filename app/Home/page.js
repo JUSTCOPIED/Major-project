@@ -4,7 +4,7 @@ import { Protected } from "@/components/protected";
 import { useAuth } from "@/components/auth-provider";
 import { useState, useEffect } from "react";
 import { database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
-import { ref, onValue, runTransaction, set, get } from "firebase/database";
+import { ref, onValue, runTransaction, set } from "firebase/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
@@ -27,20 +27,14 @@ function DashboardInner(){
   const [filter,setFilter] = useState("all");
   const [error,setError] = useState("");
 
-  // Listen to user test numbers then fetch summaries
+  // Listen directly to embedded tests under user/{uid}/tests
   useEffect(()=>{
     if(!user) return;
-    const userTestsRef = ref(database, `userTests/${user.uid}`);
-    const unsub = onValue(userTestsRef, async (snap)=>{
+    const testsRef = ref(database, `user/${user.uid}/tests`);
+    const unsub = onValue(testsRef, (snap)=>{
       const val = snap.val() || {};
-      const testNos = Object.keys(val).map(n=> Number(n)).sort((a,b)=> b-a).slice(0,5);
-      const summaries = [];
-      for(const no of testNos){
-        // eslint-disable-next-line no-await-in-loop
-        const testSnap = await get(ref(database, `tests/${no}`));
-        if(testSnap.exists()) summaries.push({ testNo: no, ...testSnap.val() });
-      }
-      setHistory(summaries);
+      const list = Object.entries(val).map(([k,v])=> ({ testNo:Number(k), ...v })).sort((a,b)=> b.testNo - a.testNo).slice(0,5);
+      setHistory(list);
     });
     return ()=>unsub();
   },[user]);
@@ -71,10 +65,9 @@ function DashboardInner(){
     try {
       await runTransaction(counterRef, (current)=> current == null ? 1 : current + 1, { applyLocally:false }).then(res=> { testNo = res.snapshot.val(); });
       const summary = { uid:user.uid, timestamp: Date.now(), environment: 'quick', totalCases: runData.length, passCount, failCount, passRate, threshold: null, concurrency: null, note: 'quick-run' };
-      await set(ref(database, `tests/${testNo}`), summary);
-      await set(ref(database, `userTests/${user.uid}/${testNo}`), true);
-      // stats update
-      const userStatsRef = ref(database, `users/${user.uid}/stats`);
+  await set(ref(database, `user/${user.uid}/tests/${testNo}`), summary);
+  // stats update
+  const userStatsRef = ref(database, `user/${user.uid}/details/stats`);
       await runTransaction(userStatsRef, (current)=>{
         if(!current) return { tests:1, passRate };
         const tests = (current.tests||0)+1; const newRate = current.passRate==null? passRate : Math.round(((current.passRate*(tests-1))+passRate)/tests);
