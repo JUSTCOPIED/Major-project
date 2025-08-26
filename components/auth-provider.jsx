@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       if(u){
         try {
           // Create / update user profile record atomically (basic fields only)
-            const userRef = ref(database, `users/${u.uid}`);
+            const userRef = ref(database, `user/${u.uid}/details`);
             if (FIREBASE_ENV_ISSUES.length){
               // eslint-disable-next-line no-console
               console.error("Skipping user profile sync; missing env vars", FIREBASE_ENV_ISSUES);

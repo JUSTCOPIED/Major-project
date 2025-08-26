@@ -91,10 +91,9 @@ function StartTestInner(){
       concurrency,
       note: note.trim() || null
     };
-    await set(ref(database, `tests/${testNo}`), testSummary);
-    await set(ref(database, `userTests/${user.uid}/${testNo}`), true);
-    // Update user stats (tests count & rolling pass rate)
-    const userStatsRef = ref(database, `users/${user.uid}/stats`);
+  await set(ref(database, `user/${user.uid}/tests/${testNo}`), testSummary);
+  // Update user stats (tests count & rolling pass rate)
+  const userStatsRef = ref(database, `user/${user.uid}/details/stats`);
     try {
       await runTransaction(userStatsRef, (current)=>{
         if(!current){
