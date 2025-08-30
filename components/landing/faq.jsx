@@ -7,8 +7,8 @@ const faqs = [
 ];
 export function FAQ(){
   return (
-    <section id="faq" className="scroll-mt-24 py-28 max-w-4xl mx-auto px-6 md:px-12 lg:px-20">
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 tracking-tight">Questions</h2>
+    <section id="faq" className="scroll-mt-24 py-24 sm:py-28 max-w-4xl mx-auto px-6 md:px-12 lg:px-20">
+      <h2 className="text-center text-3xl md:text-4xl font-bold mb-10 tracking-tight">Questions</h2>
       <div className="space-y-4">
         {faqs.map(f => <Item key={f.q} {...f} />)}
       </div>

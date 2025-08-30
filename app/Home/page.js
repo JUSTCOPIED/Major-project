@@ -1,14 +1,14 @@
 "use client";
 
-import { Protected } from "@/components/protected";
-import { useAuth } from "@/components/auth-provider";
+import { Protected } from "../../components/protected";
+import { useAuth } from "../../components/auth-provider";
 import { useState, useEffect } from "react";
-import { database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
+import { database, FIREBASE_ENV_ISSUES } from "../../lib/firebase";
 import { ref, onValue, runTransaction, set } from "firebase/database";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
+import { Table, THead, TBody, TR, TH, TD } from "../../components/ui/table";
+import { Badge } from "../../components/ui/badge";
 import Link from "next/link";
 
 export default function DashboardPage(){
@@ -50,7 +50,6 @@ function DashboardInner(){
     const testCases = ["Auth flow", "Profile update", "Data fetch", "Accessibility", "Performance"];
     const runData = [];
     for(const name of testCases){
-      // eslint-disable-next-line no-await-in-loop
       await new Promise(r=>setTimeout(r, 350));
       const passed = Math.random() > 0.2;
       runData.push({ name, passed });
@@ -74,7 +73,6 @@ function DashboardInner(){
         return { tests, passRate:newRate };
       });
     } catch(e){
-      // eslint-disable-next-line no-console
       console.error("Quick run failed", e);
       setError(e?.message || 'Failed to save test');
     } finally {

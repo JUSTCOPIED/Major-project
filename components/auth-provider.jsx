@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth, database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
+import { auth, database, FIREBASE_ENV_ISSUES } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { ref, runTransaction, set, serverTimestamp, update } from "firebase/database";
 

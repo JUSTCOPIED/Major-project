@@ -1,14 +1,14 @@
 "use client";
 
-import { Protected } from "@/components/protected";
-import { useAuth } from "@/components/auth-provider";
+import { Protected } from "../../components/protected";
+import { useAuth } from "../../components/auth-provider";
 import { useState, useRef } from "react";
-import { database, FIREBASE_ENV_ISSUES } from "@/lib/firebase";
+import { database, FIREBASE_ENV_ISSUES } from "../../lib/firebase";
 import { ref, push, runTransaction, set } from "firebase/database";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
 
 const ALL_CASES = [
@@ -61,7 +61,6 @@ function StartTestInner(){
     for(const test of casesToRun){
       if(abortRef.current) break;
       // simulated parallelism factor influences duration
-      // eslint-disable-next-line no-await-in-loop
       await new Promise(r=> setTimeout(r, 250 + Math.random()*400 / concurrency));
       const passed = Math.random()*100 <= threshold + (Math.random()*10 -5);
       const duration = 200 + Math.floor(Math.random()*400);
@@ -78,7 +77,7 @@ function StartTestInner(){
     await runTransaction(counterRef, (current)=>{
       if(current === null) return 1; return current + 1;
     }, { applyLocally:false }).then(res=> { testNo = res.snapshot.val(); });
-    // Store minimal summary only (clean DB)
+    // Store summary + details (cases + config)
     const testSummary = {
       uid: user.uid,
       timestamp: startTs,
@@ -91,7 +90,21 @@ function StartTestInner(){
       concurrency,
       note: note.trim() || null
     };
-  await set(ref(database, `user/${user.uid}/tests/${testNo}`), testSummary);
+    const baseRef = ref(database, `user/${user.uid}/tests/${testNo}`);
+    await set(baseRef, testSummary);
+    // cases 1..N with group if available
+    const nameToGroup = (name)=> (ALL_CASES.find(c=>c.name===name)?.group || null);
+    const casesObj = results.reduce((acc, r, i)=> {
+      acc[i+1] = { name: r.name, group: nameToGroup(r.name), passed: r.passed, duration: r.duration };
+      return acc;
+    }, {});
+    await set(ref(database, `user/${user.uid}/tests/${testNo}/cases`), casesObj);
+    await set(ref(database, `user/${user.uid}/tests/${testNo}/config`), {
+      environment,
+      threshold,
+      concurrency,
+      note: note.trim() || null
+    });
   // Update user stats (tests count & rolling pass rate)
   const userStatsRef = ref(database, `user/${user.uid}/details/stats`);
     try {
@@ -105,7 +118,6 @@ function StartTestInner(){
       });
       router.push('/Home');
     } catch(e){
-      // eslint-disable-next-line no-console
       console.error("Test run save failed", e);
       setError(e?.message || 'Failed to save test');
     } finally {

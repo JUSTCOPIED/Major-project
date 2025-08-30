@@ -10,8 +10,8 @@ const items = [
 ];
 export function FeatureGrid(){
   return (
-    <section id="features" className="scroll-mt-24 py-28 max-w-6xl mx-auto px-6 md:px-12 lg:px-20">
-      <h2 className="text-3xl md:text-4xl font-bold mb-12 tracking-tight">Platform Pillars</h2>
+    <section id="features" className="scroll-mt-24 py-24 sm:py-28 max-w-6xl mx-auto px-6 md:px-12 lg:px-20">
+      <h2 className="text-center text-3xl md:text-4xl font-bold mb-12 tracking-tight">Platform Pillars</h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((f,i)=> (
           <motion.div key={f.title} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{duration:0.5, delay:i*0.05}} className="group relative p-6 rounded-sm border border-border bg-card text-card-foreground overflow-hidden">

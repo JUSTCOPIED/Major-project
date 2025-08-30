@@ -1,8 +1,8 @@
 
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/components/auth-provider";
-import { Navbar } from "@/components/navbar";
+import { ThemeProvider } from "../components/theme-provider";
+import { AuthProvider } from "../components/auth-provider";
+import { Navbar } from "../components/navbar";
 
 export const metadata = {
   title: "Major Project",

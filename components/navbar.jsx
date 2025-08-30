@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./auth-provider";
 import { useTheme } from "./theme-provider";
 import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "../lib/firebase";
 import { useState } from "react";
 
 const navItems = [
@@ -52,7 +52,13 @@ export function Navbar() {
                     </li>
                   ))}
                   <li>
-                    <button role="menuitem" onClick={async()=>{ await signOut(auth); setMenuOpen(false); router.push('/'); }} className="w-full text-left px-3 py-2 rounded-sm hover:bg-destructive focus:outline-none focus:ring-2 focus:ring-ring">Logout</button>
+                    <button
+                      role="menuitem"
+                      onClick={async()=>{ await signOut(auth); setMenuOpen(false); router.push('/'); }}
+                      className="w-full text-left px-3 py-2 rounded-sm text-destructive hover:bg-destructive/10 focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      Logout
+                    </button>
                   </li>
                 </ul>
               )}

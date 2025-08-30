@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/auth-provider";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { useAuth } from "../../components/auth-provider";
 
 export default function LoginPage(){
   const router = useRouter();
