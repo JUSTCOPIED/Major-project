@@ -75,20 +75,8 @@ const EnhancedHero = () => {
                   )}
                 >
                   <img
-                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/react-icon.svg"
-                    alt="React"
-                    className="h-6 saturate-0 transition-all group-hover:saturate-100"
-                  />
-                </div>
-                <div
-                  className={cn(
-                    getButtonVariants("outline"),
-                    "group flex aspect-square h-12 items-center justify-center p-0",
-                  )}
-                >
-                  <img
-                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/typescript-icon.svg"
-                    alt="TypeScript"
+                    src="https://cdn.simpleicons.org/javascript/F7DF1E"
+                    alt="JavaScript"
                     className="h-6 saturate-0 transition-all group-hover:saturate-100"
                   />
                 </div>
@@ -101,6 +89,49 @@ const EnhancedHero = () => {
                   <img
                     src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/tailwind-icon.svg"
                     alt="Tailwind CSS"
+                    className="h-6 saturate-0 transition-all group-hover:saturate-100"
+                  />
+                </div>
+                <div
+                  className={cn(
+                    getButtonVariants("outline"),
+                    "group flex aspect-square h-12 items-center justify-center p-0",
+                  )}
+                >
+                  {/* Light mode: black icon; Dark mode: white icon */}
+                  <img
+                    src="https://cdn.simpleicons.org/nextdotjs/000000"
+                    alt="Next.js"
+                    className="h-6 dark:hidden"
+                  />
+                  <img
+                    src="https://cdn.simpleicons.org/nextdotjs/ffffff"
+                    alt=""
+                    aria-hidden="true"
+                    className="h-6 hidden dark:block"
+                  />
+                </div>
+                <div
+                  className={cn(
+                    getButtonVariants("outline"),
+                    "group flex aspect-square h-12 items-center justify-center p-0",
+                  )}
+                >
+                  <img
+                    src="https://cdn.simpleicons.org/firebase"
+                    alt="Firebase"
+                    className="h-6 saturate-0 transition-all group-hover:saturate-100"
+                  />
+                </div>
+                <div
+                  className={cn(
+                    getButtonVariants("outline"),
+                    "group flex aspect-square h-12 items-center justify-center p-0",
+                  )}
+                >
+                  <img
+                    src="https://cdn.simpleicons.org/docker"
+                    alt="Docker"
                     className="h-6 saturate-0 transition-all group-hover:saturate-100"
                   />
                 </div>

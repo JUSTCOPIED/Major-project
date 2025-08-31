@@ -14,22 +14,22 @@ import Link from "next/link";
 function DetailsInner(){
   const { user } = useAuth();
   const params = useParams();
-  const testNo = Number(params?.testNo);
+  const testNoParam = params?.testNo; // keep as string to avoid NaN on first render
   const [data,setData] = useState(null);
 
   useEffect(()=>{
-    if(!user || !testNo) return;
-    const base = ref(database, `user/${user.uid}/tests/${testNo}`);
+    if(!user || !testNoParam) return;
+    const base = ref(database, `user/${user.uid}/tests/${testNoParam}`);
     const unsub = onValue(base, snap => {
       setData(snap.val());
     });
     return ()=>unsub();
-  },[user, testNo]);
+  },[user, testNoParam]);
 
   if(!data){
     return (
       <div className="max-w-5xl mx-auto p-6">
-        <p className="text-sm opacity-70">Loading test #{testNo}…</p>
+  <p className="text-sm opacity-70">Loading test #{testNoParam}…</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ function DetailsInner(){
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Test #{testNo}</h1>
+  <h1 className="text-2xl font-bold">Test #{testNoParam}</h1>
         <Link href="/Home" className="text-xs underline">Back to Dashboard</Link>
       </div>
       <div className="grid gap-6 md:grid-cols-3">

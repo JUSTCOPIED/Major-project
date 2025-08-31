@@ -2,7 +2,7 @@
 
 import { Protected } from "../../components/protected";
 import { useAuth } from "../../components/auth-provider";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { database, FIREBASE_ENV_ISSUES } from "../../lib/firebase";
 import { ref, onValue, runTransaction, set } from "firebase/database";
 import { Button } from "../../components/ui/button";
@@ -26,6 +26,13 @@ function DashboardInner(){
   const [history,setHistory] = useState([]); // aggregated test summaries
   const [filter,setFilter] = useState("all");
   const [error,setError] = useState("");
+
+  const filteredHistory = useMemo(() => {
+    if (filter === "all") return history;
+    if (filter === "pass") return history.filter(r => r.passCount === r.totalCases);
+    if (filter === "fail") return history.filter(r => r.passCount !== r.totalCases);
+    return history;
+  }, [history, filter]);
 
   // Listen directly to embedded tests under user/{uid}/tests
   useEffect(()=>{
@@ -157,7 +164,7 @@ function DashboardInner(){
             <div className="flex gap-2 flex-wrap">
               {['all','pass','fail'].map(f => <Button key={f} size="sm" variant={filter===f? 'default':'outline'} onClick={()=>setFilter(f)}>{f}</Button>)}
             </div>
-            <p className="text-xs opacity-70">Showing {filter} cases.</p>
+            <p className="text-xs opacity-70">Showing {filteredHistory.length} of {history.length} runs.</p>
           </CardContent>
         </Card>
       </section>
@@ -178,13 +185,15 @@ function DashboardInner(){
               </TR>
             </THead>
             <TBody>
-              {history.map(run => (
+              {filteredHistory.map(run => (
                 <TR key={run.testNo}>
                   <TD className="whitespace-nowrap text-xs">{new Date(run.timestamp).toLocaleString()}</TD>
                   <TD><Badge variant={run.passCount===run.totalCases? 'success':'outline'}>{run.passCount}/{run.totalCases}</Badge></TD>
                   <TD className="text-xs">{run.environment}</TD>
                   <TD className="text-xs">{run.totalCases}</TD>
-                  <TD className="text-xs font-mono">#{run.testNo}</TD>
+                  <TD className="text-xs font-mono">
+                    <Link href={`/test/${run.testNo}`} className="underline hover:opacity-80">#{run.testNo}</Link>
+                  </TD>
                 </TR>
               ))}
               {!history.length && <TR><TD colSpan={5} className="text-sm opacity-60">No tests yet.</TD></TR>}
