@@ -15,7 +15,7 @@ const TeamSection = ({
     },
     {
       id: "member-3",
-      name: "Jisha Patil",
+      name: "Disha Patil",
       role: "Kalyan warrior",
       avatar: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar-7.webp",
       github: "#",

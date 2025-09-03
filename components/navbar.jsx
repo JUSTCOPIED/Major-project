@@ -26,7 +26,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <nav className="max-w-7xl mx-auto flex items-center gap-4 px-4 py-3">        
         <div className="flex items-center gap-6 flex-1">
-          <Link href="/" className="font-bold tracking-tight text-lg focus:outline-none focus:ring-2 focus:ring-ring rounded-sm">FairHireAI</Link>
+          <Link href="/" className="font-bold tracking-tight text-lg focus:outline-none focus:ring-2 focus:ring-ring rounded-sm">EquiTestAI</Link>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={toggle} aria-label="Toggle theme" className="h-9 w-9 inline-flex items-center justify-center rounded-sm border border-border hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-ring text-xs">
