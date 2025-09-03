@@ -2,10 +2,7 @@
 import { motion } from "framer-motion";
 const items = [
   { title:"Automated Screening", desc:"AI triage ranks candidates on skill & potential." },
-  { title:"Bias Detection", desc:"Realtime disparity metrics & alerts." },
-  { title:"Explainability", desc:"Every recommendation comes with rationale." },
-  { title:"Skill Graph", desc:"Infer transferable capabilities beyond titles." },
-  { title:"Interview Insights", desc:"Audio & video signals summarized." },
+  { title:"Bias Detection & Explanability", desc:"Realtime disparity metrics & alerts." },
   { title:"Cultural Fit", desc:"Multi-dimensional values alignment scoring." }
 ];
 export function FeatureGrid(){

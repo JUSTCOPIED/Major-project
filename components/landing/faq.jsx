@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 const faqs = [
-  { q:"Is data secure?", a:"Yes. Encryption in transit & at rest, plus tenant isolation." },
+  { q:"Is data secure?", a:"Yes. We generate our own data" },
   { q:"Can we tune fairness thresholds?", a:"Granular per-role threshold controls with audit trail." },
   { q:"What integrations exist?", a:"ATS, HRIS, calendar & video stack out-of-the-box." },
 ];

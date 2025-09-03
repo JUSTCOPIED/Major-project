@@ -33,10 +33,10 @@ const EnhancedHero = () => {
             <div>
               <h1 className="mb-6 text-2xl font-bold tracking-tight text-pretty lg:text-5xl">
                 Professional Test Runner & Analytics Platform for{" "}
-                <span className="text-primary">Modern Teams</span>
+                <span className="text-primary">Modern Hiring Systems</span>
               </h1>
               <p className="mx-auto max-w-3xl text-muted-foreground lg:text-xl">
-                Execute comprehensive test suites with detailed analytics, environment management, 
+                Execute comprehensive test suites with detailed analytics, 
                 and real-time reporting. Built for developers who demand reliability and insights.
               </p>
             </div>
