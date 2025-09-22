@@ -5,7 +5,7 @@ import { AuthProvider } from "../components/auth-provider";
 import { Navbar } from "../components/navbar";
 
 export const metadata = {
-  title: "Major Project",
+  title: "Equitest AI",
   description: "A Next.js application with Firebase integration",
 };
 
