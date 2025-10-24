@@ -4,7 +4,7 @@ AI automates bias detection in AI systems using Fairlearn, ART, and SHAP. It sim
 [View Presentation](https://docs.google.com/document/d/1YuXVdUjDPXA4ov8NkPDUSkQuw_eAwkbSYpqSLrwvaU0/edit?usp=sharing)
 
 # Survey Paper
-[View Survey Paper](https://docs.google.com/document/d/1bHcgZgueblIcO3NujNgUzRkxYHrvlkkce_-C_ZMRmpg/edit?usp=sharing)
+[View Survey Paper](https://docs.google.com/document/d/1IFOIuGniceXNBs7uR_2rdvV-TgLcn7fIQJbok2vUpJs/edit?usp=sharing)
 
 ## Getting Started
 just trying to get things done 
