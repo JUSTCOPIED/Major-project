@@ -12,12 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 // Optional dummy Table components if they exist, otherwise basic HTML works
-const Table = ({children}) => <table className="w-full text-left border-collapse">{children}</table>
-const THead = ({children}) => <thead className="bg-muted text-muted-foreground">{children}</thead>
-const TBody = ({children}) => <tbody>{children}</tbody>
-const TR = ({children}) => <tr className="border-b">{children}</tr>
-const TH = ({children}) => <th className="p-2 font-medium">{children}</th>
-const TD = ({children}) => <td className="p-2">{children}</td>
+const Table = ({ children }) => <table className="w-full text-left border-collapse">{children}</table>
+const THead = ({ children }) => <thead className="bg-muted text-muted-foreground">{children}</thead>
+const TBody = ({ children }) => <tbody>{children}</tbody>
+const TR = ({ children }) => <tr className="border-b">{children}</tr>
+const TH = ({ children }) => <th className="p-2 font-medium">{children}</th>
+const TD = ({ children }) => <td className="p-2">{children}</td>
 
 function ReportChat({ testProgress }) {
   const [messages, setMessages] = useState([]);
@@ -90,7 +90,7 @@ function ReportChat({ testProgress }) {
           {loading && <div className="text-xs opacity-50 ml-2">AI is thinking...</div>}
         </div>
         <div className="flex gap-2">
-          <Input 
+          <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
@@ -172,6 +172,13 @@ function DeepDiveTabs({ results }) {
               <p className="font-mono text-lg font-bold text-red-500">{det.custom?.pay_gap_percent?.toFixed(1) || '0'}%</p>
             </div>
           </div>
+
+          {det.charts_html && (
+            <div className="mt-4 border rounded shadow-inner overflow-hidden">
+              <iframe sandbox="allow-scripts allow-same-origin" srcDoc={det.charts_html} className="w-full h-[600px] border-none" />
+            </div>
+          )}
+
           {/* Candidate Table */}
           <div className="overflow-auto border border-border rounded-sm max-h-[400px]">
             <Table>
@@ -214,7 +221,7 @@ function StartTestInner() {
   const [candidatesToSelect, setCandidatesToSelect] = useState(50);
   const [selected, setSelected] = useState(() => ALL_CASES.map(c => c.name));
   const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState([]); 
+  const [progress, setProgress] = useState([]);
   const [lastResults, setLastResults] = useState([]);
   const [error, setError] = useState("");
   const abortRef = useRef(false);

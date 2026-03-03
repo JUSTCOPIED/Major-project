@@ -170,7 +170,7 @@ function DeepDiveTabs({ results }) {
 
           {det.charts_html && (
             <div className="mt-4 border rounded shadow-inner overflow-hidden">
-              <iframe srcDoc={det.charts_html} className="w-full h-[600px] border-none" />
+              <iframe sandbox="allow-scripts allow-same-origin" srcDoc={det.charts_html} className="w-full h-[600px] border-none" />
             </div>
           )}
 
