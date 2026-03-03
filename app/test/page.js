@@ -71,7 +71,7 @@ function ReportChat({ testProgress }) {
     <Card className="mt-6 border-blue-500/20 shadow-md">
       <CardHeader className="bg-blue-50/5 dark:bg-blue-900/10 border-b">
         <CardTitle className="text-lg flex items-center gap-2">
-          EthosGuard AI Assistant
+          EquiTest AI Assistant
         </CardTitle>
         <CardDescription>Ask questions about your fairness audit results</CardDescription>
       </CardHeader>

@@ -1,4 +1,3 @@
-import { Github, Linkedin, Twitter } from "lucide-react";
 
 const TeamSection = ({
   heading = "Meet Our Team",
@@ -6,41 +5,30 @@ const TeamSection = ({
   members = [
     {
       id: "member-2",
-      name: "Asmi",
-      role: "Co-Lead Engineer",
+      name: "Asmi Panchal",
+      role: "",
       avatar: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar-1.webp",
-      github: "#",
-      twitter: "#",
-      linkedin: "#",
+
     },
     {
       id: "member-3",
       name: "Disha Patil",
-      role: "Kalyan warrior",
+      role: "",
       avatar: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar-7.webp",
-      github: "#",
-      twitter: "#",
-      linkedin: "#",
     },
     {
       id: "member-1",
       name: "Vansh Agarwal",
-      role: "Project ka Malik",
+      role: "",
       avatar: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar-4.webp",
-      github: "#",
-      twitter: "#",
-      linkedin: "#",
     },
     {
       id: "member-5",
-      name: "Sanjana ",
-      role: "Doc master",
+      name: "Sanjana K.A",
+      role: "",
       avatar: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar-8.webp",
-      github: "#",
-      twitter: "#",
-      linkedin: "#",
     },
-    
+
   ],
 }) => {
   return (
@@ -61,8 +49,8 @@ const TeamSection = ({
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">
                   <div className="size-20 lg:size-24 rounded-full overflow-hidden bg-muted/50 flex items-center justify-center">
-                    <img 
-                      src={member.avatar} 
+                    <img
+                      src={member.avatar}
                       alt={member.name}
                       className="size-full object-cover"
                       onError={(e) => {
